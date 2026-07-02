@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: WAF SOC
+    orgId: 1
+    folder: WAF SOC
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
