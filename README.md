@@ -59,7 +59,7 @@ cd industrial-waf-project
 ### Launch the Infrastructure
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 ### Verify Services
@@ -69,7 +69,13 @@ docker-compose up -d
 | OWASP Juice Shop | http://localhost |
 | Grafana Dashboard | http://localhost:3000 |
 
-> **Note:** No password is required for Grafana in this development environment.
+> **Grafana credentials:** `admin / admin`.
+
+Grafana is provisioned with a Loki data source automatically, so you can open **Explore** and query:
+
+```logql
+{job="modsecurity"}
+```
 
 ---
 
@@ -80,7 +86,8 @@ This repository includes a Python script that automatically tests whether the WA
 ### Run the Attack Script
 
 ```bash
-python3 attack-scripts/test_waf.py
+pip install -r requirements.txt
+python test_waf.py
 ```
 
 ### Expected Results
