@@ -71,11 +71,19 @@ docker compose up -d
 
 > **Grafana credentials:** `admin / admin`.
 
-Grafana is provisioned with a Loki data source automatically, so you can open **Explore** and query:
+Grafana is provisioned with a Loki data source automatically, and a dashboard is loaded for a cleaner SOC view. Open **Explore** and query:
 
 ```logql
 {job="modsecurity"}
 ```
+
+Successful traffic is also collected from the Nginx access log:
+
+```logql
+{job="waf-access"}
+```
+
+The dashboard parses the logs into fields like source IP, URI, status, rule ID, and attack type, then exposes quick filters for those fields.
 
 ---
 
@@ -174,13 +182,15 @@ The request is blocked by the OWASP Core Rule Set.
 {job="modsecurity"}
 ```
 
-You should see a real-time stream of blocked attacks, including:
+You should see a real-time stream of blocked attacks and successful requests, including:
 
 - Source IP address
 - Attack payload
 - Triggered OWASP CRS rule
 - Timestamp
 - HTTP status
+
+The dashboard also highlights blocked rows in red, separates allowed and blocked traffic into different tables, and provides data links to re-filter the view by IP, rule, or URL.
 
 ---
 
@@ -190,9 +200,9 @@ You should see a real-time stream of blocked attacks, including:
 |-----------|---------------|
 | WAF Engine | OWASP ModSecurity Core Rule Set (CRS) v3.3 |
 | Paranoia Level | 2 |
-| Logging | ModSecurity writes to `error.log` |
-| Log Collection | Promtail scrapes logs from a shared Docker volume |
-| Visualization | Grafana queries Loki for real-time dashboards |
+| Logging | ModSecurity writes to `error.log` and Nginx writes access logs |
+| Log Collection | Promtail parses access and ModSecurity logs from shared Docker volumes |
+| Visualization | Grafana queries Loki with table panels, summary stats, filters, and data links |
 
 ### Security Configuration
 
