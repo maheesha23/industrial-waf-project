@@ -17,3 +17,40 @@ scrape_configs:
           job: modsecurity
           app: waf
           __path__: /var/log/modsecurity/error.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<timestamp>[^\[]+) \[(?P<level>[^\]]+)\] \d+#\d+: \*\d+ \[client (?P<client_ip>[^\]]+)\] ModSecurity: Access denied with code (?P<status>\d{3}).*?\[id "(?P<rule_id>\d+)"\].*?\[msg "(?P<rule_msg>[^"]+)"\].*?\[uri "(?P<uri>[^"]+)"\].*?request: "(?P<request_line>[^"]+)"'
+      - template:
+          source: event_type
+          template: blocked
+      - template:
+          source: attack_type
+          template: '{{ if or (contains .request_line "<script>") (contains .request_line "%3Cscript%3E") }}XSS{{ else if or (contains .request_line "1=1") (contains .request_line "%27+OR+1%3D1--") }}SQL Injection{{ else if or (contains .request_line "../") (contains .request_line "%2e%2e%2f") }}LFI{{ else if or (contains .request_line "union") (contains .request_line "%20union%20") }}Command Injection{{ else }}Blocked Request{{ end }}'
+      - labels:
+          client_ip:
+          status:
+          rule_id:
+          uri:
+          event_type:
+          attack_type:
+
+  - job_name: waf-access
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: waf-access
+          app: waf
+          __path__: /var/log/nginx/access.log
+    pipeline_stages:
+      - regex:
+          expression: '^(?P<client_ip>\S+) \S+ \S+ \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+) (?P<uri>\S+) (?P<protocol>[^"]+)" (?P<status>\d{3}) (?P<body_bytes_sent>\S+) "(?P<referrer>[^"]*)" "(?P<user_agent>[^"]*)"'
+      - template:
+          source: event_type
+          template: allowed
+      - labels:
+          client_ip:
+          method:
+          uri:
+          status:
+          event_type:
