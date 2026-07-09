@@ -9,25 +9,28 @@ services:
       - waf-soc
 
   waf:
-    image: owasp/modsecurity-crs:nginx
-    container_name: waf-proxy
-    restart: unless-stopped
-    depends_on:
-      - juice-shop
-    ports:
-      - "80:8080"
-    environment:
-      PORT: 8080
-      BACKEND: http://juice-shop:3000
-      ERRORLOG: /var/log/modsecurity/error.log
-      SERVER_NAME: localhost
-      BLOCKING_PARANOIA: 2
-      DETECTION_PARANOIA: 2
-    volumes:
-      - ./logs/modsecurity:/var/log/modsecurity
-      - ./logs/nginx:/var/log/nginx
-    networks:
-      - waf-soc
+      image: owasp/modsecurity-crs:nginx
+      container_name: waf-proxy
+      restart: unless-stopped
+      depends_on:
+        - juice-shop
+      ports:
+        - "80:8080"
+      environment:
+        PORT: 8080
+        BACKEND: http://juice-shop:3000
+        ERRORLOG: /var/log/modsecurity/error.log
+        MODSEC_AUDIT_LOG: /var/log/modsecurity/audit.log   # ADD THIS LINE
+        SERVER_NAME: localhost
+        BLOCKING_PARANOIA: 1
+        DETECTION_PARANOIA: 1
+      volumes:
+        - ./logs/modsecurity:/var/log/modsecurity
+        - ./logs/nginx:/var/log/nginx
+        - ./modsecurity-exclusions.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
+
+      networks:
+        - waf-soc
 
   loki:
     image: grafana/loki:2.9.8
