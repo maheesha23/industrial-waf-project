@@ -1,621 +1,1813 @@
 {
-  "uid": "waf-soc",
-  "title": "WAF SOC Overview",
-  "tags": ["waf", "soc", "modsecurity", "loki"],
-  "schemaVersion": 39,
-  "version": 2,
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Industrial-grade Security Operations Center dashboard for ModSecurity / OWASP CRS protecting Nginx + Juice Shop, backed by Loki logs.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "All requests seen by Nginx in the selected range",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#5794F2",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 0,
+        "y": 1
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"$status\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Total Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Requests that passed through the WAF successfully (2xx/3xx: includes cached 304s, redirects, etc., not just 200)",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#F2495C",
+                "value": null
+              },
+              {
+                "color": "#73BF69",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 1
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"2..|3..\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Allowed Requests",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Requests rejected by ModSecurity / OWASP CRS",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 10
+              },
+              {
+                "color": "#F2495C",
+                "value": 50
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Blocked Requests (403)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Blocked requests as a percentage of total traffic",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 5
+              },
+              {
+                "color": "#F2495C",
+                "value": 15
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__range]))",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(count_over_time({job=\"waf-access\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "($A / $B) * 100",
+          "refId": "C",
+          "type": "math"
+        }
+      ],
+      "title": "Block Rate (%)",
+      "transformations": [
+        {
+          "id": "filterByRefId",
+          "options": {
+            "include": "C"
+          }
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Blocked attack events in the last 5 minutes",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#FF9830",
+                "value": 1
+              },
+              {
+                "color": "#F2495C",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 16,
+        "y": 1
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\"}[5m]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Active Attacks (5m)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Distinct source IPs generating blocked events",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#73BF69",
+                "value": null
+              },
+              {
+                "color": "#F2495C",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 8,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "count(sum by (client_ip) (count_over_time({job=\"modsecurity\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "refId": "A"
+        }
+      ],
+      "title": "Unique Attackers",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 9,
+      "panels": [],
+      "title": "Traffic Visualization",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 4,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Total Requests"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#5794F2",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Allowed Requests"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#73BF69",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked Requests"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#F2495C",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [
+            "max",
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"waf-access\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__interval]))",
+          "legendFormat": "Total Requests",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"2..|3..\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__interval]))",
+          "legendFormat": "Allowed Requests",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__interval]))",
+          "legendFormat": "Blocked Requests",
+          "refId": "C"
+        }
+      ],
+      "title": "Requests Over Time (Total vs Allowed vs Blocked)",
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 11,
+      "panels": [],
+      "title": "Attack Analytics",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "SQL Injection, XSS, LFI, RFI, Command Injection, Directory Traversal, etc.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "decimals": 0,
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "id": 12,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "values": [
+            "value",
+            "percent"
+          ]
+        },
+        "pieType": "donut",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum by (attack_type) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\"}[$__range]))",
+          "refId": "A"
+        }
+      ],
+      "title": "Top Attack Types",
+      "type": "piechart"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Trigger Count"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 15
+      },
+      "id": 13,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "topk(10, sum by (rule_id) (count_over_time({job=\"modsecurity\", rule_id=~\"$rule_id\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Top Triggered OWASP CRS Rule IDs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Trigger Count",
+              "Value #A": "Trigger Count",
+              "Value #B": "Trigger Count",
+              "Value #C": "Trigger Count",
+              "Value #D": "Trigger Count",
+              "Value #E": "Trigger Count",
+              "Value #F": "Trigger Count",
+              "rule_id": "Rule ID"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "desc": true,
+                "field": "Trigger Count"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Blocked Requests"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 15
+      },
+      "id": 14,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "topk(10, sum by (client_ip) (count_over_time({job=\"modsecurity\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Top Attacker IPs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Blocked Requests",
+              "Value #A": "Blocked Requests",
+              "Value #B": "Blocked Requests",
+              "Value #C": "Blocked Requests",
+              "Value #D": "Blocked Requests",
+              "Value #E": "Blocked Requests",
+              "Value #F": "Blocked Requests",
+              "client_ip": "Attacker IP"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "desc": true,
+                "field": "Blocked Requests"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 20
+      },
+      "id": 15,
+      "panels": [],
+      "title": "Most Targeted URLs Row",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Hit Count",
+              "Value #A": "Hit Count",
+              "uri": "Requested URL"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "desc": true,
+                "field": "Hit Count"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Hit Count"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-GrYlRd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 6,
+      "options": {
+        "cellHeight": "md",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "topk(10, sum by (uri) (count_over_time({job=\"modsecurity\", uri=~\"$uri\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Most Targeted URLs",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "Value": "Hit Count",
+              "Value #A": "Hit Count",
+              "uri": "Requested URL"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "desc": true,
+                "field": "Hit Count"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "id": 16,
+      "panels": [],
+      "title": "Security Events",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "description": "Unified view of allowed and blocked requests, blocked events sorted first",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "left",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Action"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 110
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "ALLOW": {
+                        "color": "#37872D",
+                        "index": 3,
+                        "text": "🟩 ALLOW"
+                      },
+                      "BLOCK": {
+                        "color": "#C4162A",
+                        "index": 0,
+                        "text": "🟥 BLOCK"
+                      },
+                      "DETECT": {
+                        "color": "#FF780A",
+                        "index": 6,
+                        "text": "🟧 DETECT"
+                      },
+                      "MONITOR": {
+                        "color": "#1F60C4",
+                        "index": 8,
+                        "text": "🟦 MONITOR"
+                      },
+                      "allow": {
+                        "color": "#37872D",
+                        "index": 4,
+                        "text": "🟩 ALLOW"
+                      },
+                      "allowed": {
+                        "color": "#37872D",
+                        "index": 5,
+                        "text": "🟩 ALLOW"
+                      },
+                      "block": {
+                        "color": "#C4162A",
+                        "index": 1,
+                        "text": "🟥 BLOCK"
+                      },
+                      "blocked": {
+                        "color": "#C4162A",
+                        "index": 2,
+                        "text": "🟥 BLOCK"
+                      },
+                      "detect": {
+                        "color": "#FF780A",
+                        "index": 7,
+                        "text": "🟧 DETECT"
+                      },
+                      "monitor": {
+                        "color": "#1F60C4",
+                        "index": 9,
+                        "text": "🟦 MONITOR"
+                      }
+                    },
+                    "type": "value"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "HTTP Status"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 140
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "200": {
+                        "color": "#37872D",
+                        "index": 0,
+                        "text": "🟩 200 OK"
+                      },
+                      "201": {
+                        "color": "#37872D",
+                        "index": 1,
+                        "text": "🟩 201 Created"
+                      },
+                      "204": {
+                        "color": "#37872D",
+                        "index": 2,
+                        "text": "🟩 204 No Content"
+                      },
+                      "301": {
+                        "color": "#1F60C4",
+                        "index": 3,
+                        "text": "🟦 301 Moved"
+                      },
+                      "302": {
+                        "color": "#1F60C4",
+                        "index": 4,
+                        "text": "🟦 302 Found"
+                      },
+                      "304": {
+                        "color": "#1F60C4",
+                        "index": 5,
+                        "text": "🟦 304 Not Modified"
+                      },
+                      "400": {
+                        "color": "#FF780A",
+                        "index": 6,
+                        "text": "🟧 400 Bad Request"
+                      },
+                      "401": {
+                        "color": "#FF780A",
+                        "index": 7,
+                        "text": "🟧 401 Unauthorized"
+                      },
+                      "403": {
+                        "color": "#C4162A",
+                        "index": 8,
+                        "text": "🟥 403 Forbidden"
+                      },
+                      "404": {
+                        "color": "#FF780A",
+                        "index": 9,
+                        "text": "🟧 404 Not Found"
+                      },
+                      "500": {
+                        "color": "#C4162A",
+                        "index": 10,
+                        "text": "⬛ 500 Server Error"
+                      },
+                      "502": {
+                        "color": "#C4162A",
+                        "index": 11,
+                        "text": "⬛ 502 Bad Gateway"
+                      },
+                      "503": {
+                        "color": "#C4162A",
+                        "index": 12,
+                        "text": "⬛ 503 Unavailable"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "pattern": "^2..$",
+                      "result": {
+                        "color": "#37872D",
+                        "index": 13,
+                        "text": "🟩 2xx"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": "^3..$",
+                      "result": {
+                        "color": "#1F60C4",
+                        "index": 14,
+                        "text": "🟦 3xx"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": "^4..$",
+                      "result": {
+                        "color": "#FF780A",
+                        "index": 15,
+                        "text": "🟧 4xx"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": "^5..$",
+                      "result": {
+                        "color": "#C4162A",
+                        "index": 16,
+                        "text": "⬛ 5xx"
+                      }
+                    },
+                    "type": "regex"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Attack Type"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 168
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "pattern": ".*([Rr]emote [Cc]ode [Ee]xecution|RCE).*",
+                      "result": {
+                        "color": "#C4162A",
+                        "index": 0,
+                        "text": "⬛ RCE"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*([Ss][Qq][Ll]).*",
+                      "result": {
+                        "color": "#C4162A",
+                        "index": 1,
+                        "text": "🟥 SQL Injection"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*([Xx][Ss][Ss]|[Cc]ross-[Ss]ite [Ss]cripting|[Ss]cript [Tt]ag).*",
+                      "result": {
+                        "color": "#FF780A",
+                        "index": 2,
+                        "text": "🟧 XSS"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*(LFI|[Ll]ocal [Ff]ile [Ii]nclusion).*",
+                      "result": {
+                        "color": "#8F3BB8",
+                        "index": 3,
+                        "text": "🟪 LFI"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*(RFI|[Rr]emote [Ff]ile [Ii]nclusion).*",
+                      "result": {
+                        "color": "#8F3BB8",
+                        "index": 4,
+                        "text": "🟪 RFI"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*([Cc]ommand [Ii]njection|[Oo][Ss] [Cc]ommand).*",
+                      "result": {
+                        "color": "#8C6D31",
+                        "index": 5,
+                        "text": "🟫 Command Injection"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*([Pp]ath|[Dd]irectory) ?[Tt]raversal.*",
+                      "result": {
+                        "color": "#1F60C4",
+                        "index": 6,
+                        "text": "🟦 Path Traversal"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*[Ss]canner.*",
+                      "result": {
+                        "color": "#E0B400",
+                        "index": 7,
+                        "text": "🟨 Scanner Activity"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*[Pp]rotocol.*",
+                      "result": {
+                        "color": "#E0B400",
+                        "index": 8,
+                        "text": "🟨 Protocol Violation"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": "^Unknown Attack$|^$",
+                      "result": {
+                        "color": "#8E8E8E",
+                        "index": 9,
+                        "text": "⬜ Unknown Attack"
+                      }
+                    },
+                    "type": "regex"
+                  },
+                  {
+                    "options": {
+                      "pattern": ".*",
+                      "result": {
+                        "color": "#8E8E8E",
+                        "index": 10,
+                        "text": "⬜ Other"
+                      }
+                    },
+                    "type": "regex"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Requested URL"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 458
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Source IP"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 105
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "level"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 102
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "method"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 86
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Timestamp"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 164
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 24,
+        "x": 0,
+        "y": 29
+      },
+      "id": 17,
+      "options": {
+        "cellHeight": "sm",
+        "enableColumnFilter": true,
+        "footer": {
+          "countRows": false,
+          "enablePagination": true,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": true
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "Timestamp"
+          }
+        ]
+      },
+      "pluginVersion": "11.1.0",
+      "targets": [
+        {
+          "expr": "{job=~\"modsecurity|waf-access\", status=~\"$status\", client_ip=~\"$client_ip\", uri=~\"$uri\"} |~ \"$rule_id\" |~ \"$attack_type\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Latest Security Events",
+      "transformations": [
+        {
+          "id": "extractFields",
+          "options": {
+            "format": "json",
+            "replace": false,
+            "source": "labels"
+          }
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Line": true,
+              "SEVERITY": true,
+              "Severity": true,
+              "app": true,
+              "filename": true,
+              "id": true,
+              "job": true,
+              "label": true,
+              "labels": true,
+              "line": true,
+              "severity": true,
+              "tsNs": true
+            },
+            "renameByName": {
+              "Time": "Timestamp",
+              "attack_type": "Attack Type",
+              "client_ip": "Source IP",
+              "event_type": "Action",
+              "rule_id": "Rule ID",
+              "status": "HTTP Status",
+              "uri": "Requested URL"
+            }
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "sort": [
+              {
+                "desc": true,
+                "field": "Timestamp"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "id": 18,
+      "panels": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "loki"
+          },
+          "gridPos": {
+            "h": 14,
+            "w": 24,
+            "x": 0,
+            "y": 39
+          },
+          "id": 19,
+          "options": {
+            "dedupStrategy": "none",
+            "enableLogDetails": true,
+            "prettifyLogMessage": true,
+            "showCommonLabels": false,
+            "showLabels": true,
+            "showTime": true,
+            "sortOrder": "Descending",
+            "wrapLogMessage": true
+          },
+          "targets": [
+            {
+              "expr": "{job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}",
+              "maxLines": 100,
+              "queryType": "range",
+              "refId": "A"
+            }
+          ],
+          "title": "Raw ModSecurity Audit Log (latest 100 entries)",
+          "type": "logs"
+        }
+      ],
+      "title": "Raw ModSecurity Logs (Forensic Investigation)",
+      "type": "row"
+    }
+  ],
   "refresh": "10s",
-  "timezone": "browser",
+  "schemaVersion": 39,
+  "tags": [
+    "waf",
+    "soc",
+    "modsecurity",
+    "loki",
+    "security"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Log Source",
+        "multi": false,
+        "name": "job",
+        "options": [],
+        "query": "label_values(job)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Status Code",
+        "multi": false,
+        "name": "status",
+        "options": [],
+        "query": "label_values(status)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Attack Type",
+        "multi": false,
+        "name": "attack_type",
+        "options": [],
+        "query": "label_values({job=\"modsecurity\"}, attack_type)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Source IP",
+        "multi": false,
+        "name": "client_ip",
+        "options": [],
+        "query": "label_values(client_ip)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Rule ID",
+        "multi": false,
+        "name": "rule_id",
+        "options": [],
+        "query": "label_values({job=\"modsecurity\"}, rule_id)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "loki"
+        },
+        "definition": "",
+        "hide": 0,
+        "includeAll": true,
+        "label": "URL",
+        "multi": false,
+        "name": "uri",
+        "options": [],
+        "query": "label_values(uri)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
   "time": {
     "from": "now-1h",
     "to": "now"
   },
-  "templating": {
-    "list": [
-      {
-        "name": "job",
-        "label": "Log Source",
-        "type": "query",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "query": "label_values(job)",
-        "current": {
-          "text": "All",
-          "value": ".*"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 1,
-        "sort": 1
-      },
-      {
-        "name": "status",
-        "label": "Status Code",
-        "type": "query",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "query": "label_values(status)",
-        "current": {
-          "text": "All",
-          "value": ".*"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 1,
-        "sort": 1
-      },
-      {
-        "name": "attack_type",
-        "label": "Attack Type",
-        "type": "query",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "query": "label_values(attack_type)",
-        "current": {
-          "text": "All",
-          "value": ".*"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 1,
-        "sort": 1
-      },
-      {
-        "name": "client_ip",
-        "label": "Source IP",
-        "type": "query",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "query": "label_values(client_ip)",
-        "current": {
-          "text": "All",
-          "value": ".*"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 1,
-        "sort": 1
-      },
-      {
-        "name": "rule_id",
-        "label": "Rule ID",
-        "type": "query",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "query": "label_values(rule_id)",
-        "current": {
-          "text": "All",
-          "value": ".*"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 1,
-        "sort": 1
-      },
-      {
-        "name": "uri",
-        "label": "URL",
-        "type": "query",
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "query": "label_values(uri)",
-        "current": {
-          "text": "All",
-          "value": ".*"
-        },
-        "includeAll": true,
-        "allValue": ".*",
-        "multi": false,
-        "refresh": 1,
-        "sort": 1
-      }
-    ]
-  },
-  "panels": [
-    {
-      "type": "stat",
-      "title": "Total Requests",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"$status\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#1f9d55",
-                "value": null
-              },
-              {
-                "color": "#f59e0b",
-                "value": 100
-              },
-              {
-                "color": "#dc2626",
-                "value": 500
-              }
-            ]
-          },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 0,
-        "y": 0
-      }
-    },
-    {
-      "type": "stat",
-      "title": "Allowed Requests",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(count_over_time({job=\"waf-access\", status=\"200\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#dc2626",
-                "value": null
-              },
-              {
-                "color": "#1f9d55",
-                "value": 1
-              }
-            ]
-          },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 6,
-        "y": 0
-      }
-    },
-    {
-      "type": "stat",
-      "title": "Blocked Requests",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__range]))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#1f9d55",
-                "value": null
-              },
-              {
-                "color": "#f59e0b",
-                "value": 10
-              },
-              {
-                "color": "#dc2626",
-                "value": 50
-              }
-            ]
-          },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 12,
-        "y": 0
-      }
-    },
-    {
-      "type": "stat",
-      "title": "Unique Attackers",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "count(sum by (client_ip) (count_over_time({job=\"modsecurity\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#1f9d55",
-                "value": null
-              },
-              {
-                "color": "#dc2626",
-                "value": 1
-              }
-            ]
-          },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 6,
-        "x": 18,
-        "y": 0
-      }
-    },
-    {
-      "type": "bargauge",
-      "title": "Attack Families",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "sum by (attack_type) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\"}[$__range]))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "options": {
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        }
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 0,
-        "y": 8
-      }
-    },
-    {
-      "type": "bargauge",
-      "title": "Top Attacker IPs",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "topk(5, sum by (client_ip) (count_over_time({job=\"modsecurity\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))"
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "decimals": 0
-        },
-        "overrides": []
-      },
-      "options": {
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "showUnfilled": true,
-        "reduceOptions": {
-          "calcs": ["lastNotNull"],
-          "fields": "",
-          "values": false
-        }
-      },
-      "gridPos": {
-        "h": 10,
-        "w": 12,
-        "x": 12,
-        "y": 8
-      }
-    },
-    {
-      "type": "table",
-      "title": "Latest Blocked Requests",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "{job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}",
-          "queryType": "range"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Line": true,
-              "line": true,
-              "job": true,
-              "app": true
-            },
-            "indexByName": {
-              "Time": 0,
-              "client_ip": 1,
-              "attack_type": 2,
-              "rule_id": 3,
-              "uri": 4,
-              "status": 5,
-              "event_type": 6
-            }
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "left",
-            "displayMode": "auto"
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "status"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "color-background"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "#1f9d55",
-                      "value": null
-                    },
-                    {
-                      "color": "#f59e0b",
-                      "value": 300
-                    },
-                    {
-                      "color": "#dc2626",
-                      "value": 400
-                    }
-                  ]
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "client_ip"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "Filter by source IP",
-                    "url": "/d/waf-soc/waf-soc-overview?orgId=1&var-client_ip=${__value.raw}&var-job=modsecurity"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "rule_id"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "Filter by rule ID",
-                    "url": "/d/waf-soc/waf-soc-overview?orgId=1&var-rule_id=${__value.raw}&var-job=modsecurity"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "uri"
-            },
-            "properties": [
-              {
-                "id": "links",
-                "value": [
-                  {
-                    "title": "Filter by URL",
-                    "url": "/d/waf-soc/waf-soc-overview?orgId=1&var-uri=${__value.raw}&var-job=modsecurity"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "showHeader": true
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 24,
-        "x": 0,
-        "y": 18
-      }
-    },
-    {
-      "type": "table",
-      "title": "Latest Allowed Requests",
-      "datasource": {
-        "type": "loki",
-        "uid": "loki"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "expr": "{job=\"waf-access\", status=~\"$status\", client_ip=~\"$client_ip\", uri=~\"$uri\"}",
-          "queryType": "range"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {}
-        },
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Line": true,
-              "line": true,
-              "job": true,
-              "app": true
-            },
-            "indexByName": {
-              "Time": 0,
-              "client_ip": 1,
-              "method": 2,
-              "uri": 3,
-              "status": 4,
-              "event_type": 5
-            }
-          }
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "left",
-            "displayMode": "auto"
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "status"
-            },
-            "properties": [
-              {
-                "id": "custom.displayMode",
-                "value": "color-background"
-              },
-              {
-                "id": "thresholds",
-                "value": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "#1f9d55",
-                      "value": null
-                    },
-                    {
-                      "color": "#f59e0b",
-                      "value": 300
-                    },
-                    {
-                      "color": "#dc2626",
-                      "value": 400
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        ]
-      },
-      "options": {
-        "showHeader": true
-      },
-      "gridPos": {
-        "h": 12,
-        "w": 24,
-        "x": 0,
-        "y": 30
-      }
-    }
-  ]
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "WAF SOC Overview",
+  "uid": "waf-soc",
+  "version": 29,
+  "weekStart": ""
 }
