@@ -70,9 +70,20 @@ scrape_configs:
       source: attack_type
       template: '{{ if eq .attack_type "" }}Unknown Attack{{ else }}{{ .attack_type }}{{ end }}'
   - labels:
-      client_ip:
       status:
       rule_id:
-      uri:
       event_type:
       attack_type:
+- job_name: waf-access
+  static_configs:
+  - targets:
+    - localhost
+    labels:
+      job: waf-access
+      app: waf
+      __path__: /var/log/nginx/access.log
+  pipeline_stages:
+  - regex:
+      expression: '^(?P<client_ip>\S+) \S+ \S+ \[(?P<time_local>[^\]]+)\] "(?P<method>\S+) (?P<uri>\S+) \S+" (?P<status>\d{3}) (?P<body_bytes_sent>\d+) "(?P<referer>[^"]*)" "(?P<user_agent>[^"]*)"'
+  - labels:
+      status:
