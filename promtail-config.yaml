@@ -1,56 +1,78 @@
 server:
   http_listen_port: 9080
   grpc_listen_port: 0
-
 positions:
   filename: /var/lib/promtail/positions.yaml
-
 clients:
-  - url: http://loki:3100/loki/api/v1/push
-
+- url: http://loki:3100/loki/api/v1/push
 scrape_configs:
-  - job_name: modsecurity
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: modsecurity
-          app: waf
-          __path__: /var/log/modsecurity/error.log
-    pipeline_stages:
-      - regex:
-          expression: '^(?P<timestamp>[^\[]+) \[(?P<level>[^\]]+)\] \d+#\d+: \*\d+ \[client (?P<client_ip>[^\]]+)\] ModSecurity: Access denied with code (?P<status>\d{3}).*?\[id "(?P<rule_id>\d+)"\].*?\[msg "(?P<rule_msg>[^"]+)"\].*?\[uri "(?P<uri>[^"]+)"\].*?request: "(?P<request_line>[^"]+)"'
-      - template:
-          source: event_type
-          template: blocked
-      - template:
-          source: attack_type
-          template: '{{ if or (contains .request_line "<script>") (contains .request_line "%3Cscript%3E") }}XSS{{ else if or (contains .request_line "1=1") (contains .request_line "%27+OR+1%3D1--") }}SQL Injection{{ else if or (contains .request_line "../") (contains .request_line "%2e%2e%2f") }}LFI{{ else if or (contains .request_line "union") (contains .request_line "%20union%20") }}Command Injection{{ else }}Blocked Request{{ end }}'
-      - labels:
-          client_ip:
-          status:
-          rule_id:
-          uri:
-          event_type:
-          attack_type:
-
-  - job_name: waf-access
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: waf-access
-          app: waf
-          __path__: /var/log/nginx/access.log
-    pipeline_stages:
-      - regex:
-          expression: '^(?P<client_ip>\S+) \S+ \S+ \[(?P<timestamp>[^\]]+)\] "(?P<method>\S+) (?P<uri>\S+) (?P<protocol>[^"]+)" (?P<status>\d{3}) (?P<body_bytes_sent>\S+) "(?P<referrer>[^"]*)" "(?P<user_agent>[^"]*)"'
-      - template:
-          source: event_type
-          template: allowed
-      - labels:
-          client_ip:
-          method:
-          uri:
-          status:
-          event_type:
+- job_name: modsecurity
+  static_configs:
+  - targets:
+    - localhost
+    labels:
+      job: modsecurity
+      app: waf
+      __path__: /var/log/modsecurity/audit.log
+  pipeline_stages:
+  - json:
+      expressions:
+        client_ip: transaction.client_ip
+        uri: transaction.request.uri
+        status: transaction.response.http_code
+        is_interrupted: transaction.is_interrupted
+        rid0: transaction.messages[0].details.ruleId
+        rid1: transaction.messages[1].details.ruleId
+        rid2: transaction.messages[2].details.ruleId
+        rmsg0: transaction.messages[0].message
+        rmsg1: transaction.messages[1].message
+        rmsg2: transaction.messages[2].message
+  - template:
+      source: rule_id
+      template: '{{ if and .rid0 (ne .rid0 "949110") }}{{ .rid0 }}{{ else if and .rid1 (ne .rid1 "949110") }}{{ .rid1 }}{{ else if and .rid2 (ne .rid2 "949110") }}{{ .rid2 }}{{ else }}{{ .rid0 }}{{ end }}'
+  - template:
+      source: rule_msg
+      template: '{{ if and .rid0 (ne .rid0 "949110") }}{{ .rmsg0 }}{{ else if and .rid1 (ne .rid1 "949110") }}{{ .rmsg1 }}{{ else if and .rid2 (ne .rid2 "949110") }}{{ .rmsg2 }}{{ else }}{{ .rmsg0 }}{{ end }}'
+  - template:
+      source: event_type
+      template: '{{ if eq .is_interrupted "true" }}blocked{{ else }}allowed{{ end }}'
+  - template:
+      source: attack_type
+      template: '{{ .rule_id }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^942.*" .attack_type "SQL Injection" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^941.*" .attack_type "XSS" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^930.*" .attack_type "Path Traversal" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^931.*" .attack_type "RFI" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^93[23].*" .attack_type "RCE" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^920.*" .attack_type "Protocol Violation" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^913.*" .attack_type "Scanner Activity" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^949.*" .attack_type "Unclassified (Score Only)" }}'
+  - template:
+      source: attack_type
+      template: '{{ regexReplaceAll "^[0-9]+$" .attack_type "Unknown Attack" }}'
+  - template:
+      source: attack_type
+      template: '{{ if eq .attack_type "" }}Unknown Attack{{ else }}{{ .attack_type }}{{ end }}'
+  - labels:
+      client_ip:
+      status:
+      rule_id:
+      uri:
+      event_type:
+      attack_type:
