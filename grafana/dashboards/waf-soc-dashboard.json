@@ -86,7 +86,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"$status\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))",
+          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"$status\"} | regexp `^(?P<client_ip>\\S+) \\S+ \\S+ \\[[^\\]]+\\] \"\\S+ (?P<uri>\\S+) \\S+\" \\d{3}` | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__range]))",
           "refId": "A"
         }
       ],
@@ -149,7 +149,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"2..|3..\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))",
+          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"2..|3..\"} | regexp `^(?P<client_ip>\\S+) \\S+ \\S+ \\[[^\\]]+\\] \"\\S+ (?P<uri>\\S+) \\S+\" \\d{3}` | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__range]))",
           "refId": "A"
         }
       ],
@@ -216,7 +216,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__range]))",
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", rule_id=~\"$rule_id\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__range]))",
           "refId": "A"
         }
       ],
@@ -286,11 +286,11 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__range]))",
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", rule_id=~\"$rule_id\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__range]))",
           "refId": "A"
         },
         {
-          "expr": "sum(count_over_time({job=\"waf-access\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__range]))",
+          "expr": "sum(count_over_time({job=\"waf-access\"} | regexp `^(?P<client_ip>\\S+) \\S+ \\S+ \\[[^\\]]+\\] \"\\S+ (?P<uri>\\S+) \\S+\" \\d{3}` | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__range]))",
           "refId": "B"
         },
         {
@@ -374,7 +374,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\"}[5m]))",
+          "expr": "sum(count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", rule_id=~\"$rule_id\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\" [5m]))",
           "refId": "A"
         }
       ],
@@ -437,7 +437,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "count(sum by (client_ip) (count_over_time({job=\"modsecurity\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "expr": "count(sum by (client_ip) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\" | client_ip=~\"$client_ip\" [$__range])))",
           "refId": "A"
         }
       ],
@@ -586,17 +586,17 @@
       },
       "targets": [
         {
-          "expr": "sum(count_over_time({job=\"waf-access\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__interval]))",
+          "expr": "sum(count_over_time({job=\"waf-access\"} | regexp `^(?P<client_ip>\\S+) \\S+ \\S+ \\[[^\\]]+\\] \"\\S+ (?P<uri>\\S+) \\S+\" \\d{3}` | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__interval]))",
           "legendFormat": "Total Requests",
           "refId": "A"
         },
         {
-          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"2..|3..\", client_ip=~\"$client_ip\", uri=~\"$uri\"}[$__interval]))",
+          "expr": "sum(count_over_time({job=\"waf-access\", status=~\"2..|3..\"} | regexp `^(?P<client_ip>\\S+) \\S+ \\S+ \\[[^\\]]+\\] \"\\S+ (?P<uri>\\S+) \\S+\" \\d{3}` | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__interval]))",
           "legendFormat": "Allowed Requests",
           "refId": "B"
         },
         {
-          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}[$__interval]))",
+          "expr": "sum(count_over_time({job=\"modsecurity\", status=~\"$status\", rule_id=~\"$rule_id\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__interval]))",
           "legendFormat": "Blocked Requests",
           "refId": "C"
         }
@@ -672,7 +672,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (attack_type) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\"}[$__range]))",
+          "expr": "sum by (attack_type) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\", rule_id=~\"$rule_id\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\" [$__range]))",
           "refId": "A"
         }
       ],
@@ -747,7 +747,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (rule_id) (count_over_time({job=\"modsecurity\", rule_id=~\"$rule_id\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "expr": "topk(10, sum by (rule_id) (count_over_time({job=\"modsecurity\", rule_id=~\"$rule_id\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\" | client_ip=~\"$client_ip\" [$__range])))",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -855,7 +855,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (client_ip) (count_over_time({job=\"modsecurity\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "expr": "topk(10, sum by (client_ip) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\" | client_ip=~\"$client_ip\" [$__range])))",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1002,7 +1002,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "topk(10, sum by (uri) (count_over_time({job=\"modsecurity\", uri=~\"$uri\", client_ip=~\"$client_ip\", attack_type=~\"$attack_type\"}[$__range])))",
+          "expr": "topk(10, sum by (uri) (count_over_time({job=\"modsecurity\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\" | label_format uri=\"{{ regexReplaceAll `\\\\?.*` .uri `` }}\" [$__range])))",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1532,7 +1532,7 @@
       "pluginVersion": "11.1.0",
       "targets": [
         {
-          "expr": "{job=~\"modsecurity|waf-access\", status=~\"$status\", client_ip=~\"$client_ip\", uri=~\"$uri\"} |~ \"$rule_id\" |~ \"$attack_type\"",
+          "expr": "{job=~\"modsecurity|waf-access\", status=~\"$status\", rule_id=~\"$rule_id\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | regexp `^(?P<client_ip>\\S+) \\S+ \\S+ \\[[^\\]]+\\] \"\\S+ (?P<uri>\\S+) \\S+\" \\d{3}` | client_ip=~\"$client_ip\" | uri=~\"$uri\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -1562,7 +1562,9 @@
               "labels": true,
               "line": true,
               "severity": true,
-              "tsNs": true
+              "tsNs": true,
+              "__error__": true,
+              "__error_details__": true
             },
             "renameByName": {
               "Time": "Timestamp",
@@ -1613,7 +1615,7 @@
           "id": 19,
           "options": {
             "dedupStrategy": "none",
-            "enableLogDetails": true,
+            "enableLogDetails": false,
             "prettifyLogMessage": true,
             "showCommonLabels": false,
             "showLabels": true,
@@ -1623,7 +1625,7 @@
           },
           "targets": [
             {
-              "expr": "{job=\"modsecurity\", status=~\"$status\", client_ip=~\"$client_ip\", rule_id=~\"$rule_id\", uri=~\"$uri\", attack_type=~\"$attack_type\"}",
+              "expr": "{job=\"modsecurity\", status=~\"$status\", rule_id=~\"$rule_id\", attack_type=~\"$attack_type\"} | json client_ip=\"transaction.client_ip\", uri=\"transaction.request.uri\" | client_ip=~\"$client_ip\" | uri=~\"$uri\"",
               "maxLines": 100,
               "queryType": "range",
               "refId": "A"
@@ -1724,29 +1726,18 @@
         "type": "query"
       },
       {
-        "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": ".*",
+          "value": ".*"
         },
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "definition": "",
         "hide": 0,
-        "includeAll": true,
         "label": "Source IP",
-        "multi": false,
         "name": "client_ip",
         "options": [],
-        "query": "label_values(client_ip)",
-        "refresh": 2,
-        "regex": "",
+        "query": ".*",
         "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
+        "type": "textbox"
       },
       {
         "allValue": ".*",
@@ -1774,29 +1765,18 @@
         "type": "query"
       },
       {
-        "allValue": ".*",
         "current": {
           "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "text": ".*",
+          "value": ".*"
         },
-        "datasource": {
-          "type": "loki",
-          "uid": "loki"
-        },
-        "definition": "",
         "hide": 0,
-        "includeAll": true,
         "label": "URL",
-        "multi": false,
         "name": "uri",
         "options": [],
-        "query": "label_values(uri)",
-        "refresh": 2,
-        "regex": "",
+        "query": ".*",
         "skipUrlSync": false,
-        "sort": 1,
-        "type": "query"
+        "type": "textbox"
       }
     ]
   },

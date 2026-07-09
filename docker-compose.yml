@@ -19,16 +19,20 @@ services:
       environment:
         PORT: 8080
         BACKEND: http://juice-shop:3000
+        SERVERNAME: localhost
         ERRORLOG: /var/log/modsecurity/error.log
-        MODSEC_AUDIT_LOG: /var/log/modsecurity/audit.log   # ADD THIS LINE
-        SERVER_NAME: localhost
-        BLOCKING_PARANOIA: 1
-        DETECTION_PARANOIA: 1
+        ACCESSLOG: /var/log/nginx/access.log
+        MODSEC_AUDIT_LOG: /var/log/modsecurity/audit.log
+        MODSEC_AUDIT_LOG_FORMAT: JSON
+        MODSEC_AUDIT_LOG_TYPE: Serial
+        MODSEC_AUDIT_ENGINE: RelevantOnly
+        MODSEC_RULE_ENGINE: "On"
+        BLOCKING_PARANOIA: 2
+        DETECTION_PARANOIA: 2
       volumes:
         - ./logs/modsecurity:/var/log/modsecurity
         - ./logs/nginx:/var/log/nginx
         - ./modsecurity-exclusions.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
-
       networks:
         - waf-soc
 
