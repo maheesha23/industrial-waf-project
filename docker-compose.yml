@@ -33,6 +33,7 @@ services:
         - ./logs/modsecurity:/var/log/modsecurity
         - ./logs/nginx:/var/log/nginx
         - ./modsecurity-exclusions.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:ro
+        - ./nginx-templates/default.conf.template:/etc/nginx/templates/conf.d/default.conf.template:ro
       networks:
         - waf-soc
 
