@@ -71,19 +71,17 @@ docker compose up -d
 
 > **Grafana credentials:** `admin / admin`.
 
-Grafana is provisioned with a Loki data source automatically, and a dashboard is loaded for a cleaner SOC view. Open **Explore** and query:
+Grafana is automatically provisioned with a Loki data source and the **WAF SOC Overview** dashboard on first startup — no manual setup required. Open the dashboard directly from **Dashboards → WAF SOC → WAF SOC Overview**, or query Loki manually via **Explore**:
 
 ```logql
 {job="modsecurity"}
 ```
 
-Successful traffic is also collected from the Nginx access log:
+Successful traffic is collected separately from the Nginx access log:
 
 ```logql
 {job="waf-access"}
 ```
-
-The dashboard parses the logs into fields like source IP, URI, status, rule ID, and attack type, then exposes quick filters for those fields.
 
 ---
 
@@ -119,7 +117,7 @@ Traffic is successfully forwarded to OWASP Juice Shop.
 The script attempts to bypass authentication using:
 
 ```text
-admin@juice-sh.op' OR 1=1--
+' OR 1=1--
 ```
 
 **Expected Result**
@@ -128,13 +126,13 @@ admin@juice-sh.op' OR 1=1--
 HTTP 403 Forbidden
 ```
 
-ModSecurity detects and blocks the attack.
+ModSecurity detects and blocks the attack (OWASP CRS rule `942100` — SQL Injection Attack Detected via libinjection).
 
 ---
 
 #### 🚫 Cross-Site Scripting (XSS)
 
-The script attempts to inject a malicious script tag.
+The script attempts to inject a malicious `<img>` tag with an `onerror` handler.
 
 **Expected Result**
 
@@ -142,55 +140,47 @@ The script attempts to inject a malicious script tag.
 HTTP 403 Forbidden
 ```
 
-The request is blocked by the OWASP Core Rule Set.
+The request is blocked by the OWASP Core Rule Set (rule `941100`).
+
+---
+
+#### 🚫 Path Traversal
+
+The script attempts to read `/etc/passwd` via a directory traversal payload.
+
+**Expected Result**
+
+```text
+HTTP 403 Forbidden
+```
+
+Blocked by rule `930120`.
 
 ---
 
 ## 📊 Visualizing Attacks (Grafana SOC)
 
-> 📸 Consider adding a screenshot of your Grafana dashboard here.
+The **WAF SOC Overview** dashboard gives a real-time operational view of traffic hitting the WAF:
 
-### Steps
+![Grafana WAF SOC Dashboard](docs/dashboard-overview.png)
 
-1. Open Grafana:
+At a glance, the dashboard surfaces:
 
-   ```
-   http://localhost:3000
-   ```
+- **Total / Allowed / Blocked request counts** and live **block rate**, over the selected time range
+- **Active Attacks (5m)** and **Unique Attackers**, for at-a-glance situational awareness
+- **Top Attack Types** — a breakdown by classified category (SQL Injection, XSS, Path Traversal, Scanner Activity, etc.)
+- **Top Triggered OWASP CRS Rule IDs** and **Top Attacker IPs**, ranked by trigger/block count
+- **Latest Security Events** — a unified, color-coded table of every request (allowed and blocked), showing source IP, matched rule, HTTP status, and the full requested URL
 
-2. Navigate to:
+Blocked rows are highlighted in red, HTTP status codes and actions are color-coded (green = allowed, red = blocked), and both **Source IP** and **URL** can be filtered directly from the dashboard toolbar.
 
-   ```
-   Connections → Data Sources
-   ```
-
-3. Add a new **Loki** data source.
-
-4. Configure the URL:
-
-   ```text
-   http://loki:3100
-   ```
-
-5. Click **Save & Test**.
-
-6. Navigate to the **Explore** tab.
-
-7. Run the following LogQL query:
+To explore raw log data manually, open **Explore** and run:
 
 ```logql
 {job="modsecurity"}
 ```
 
-You should see a real-time stream of blocked attacks and successful requests, including:
-
-- Source IP address
-- Attack payload
-- Triggered OWASP CRS rule
-- Timestamp
-- HTTP status
-
-The dashboard also highlights blocked rows in red, separates allowed and blocked traffic into different tables, and provides data links to re-filter the view by IP, rule, or URL.
+This returns the full JSON audit trail for every request ModSecurity flagged, including the matched rule, anomaly score, and payload — useful for forensic drill-down beyond what the dashboard panels summarize.
 
 ---
 
@@ -198,7 +188,7 @@ The dashboard also highlights blocked rows in red, separates allowed and blocked
 
 | Component | Configuration |
 |-----------|---------------|
-| WAF Engine | OWASP ModSecurity Core Rule Set (CRS) v3.3 |
+| WAF Engine | OWASP ModSecurity Core Rule Set (CRS) v4.25.0 |
 | Paranoia Level | 2 |
 | Logging | ModSecurity writes to `error.log` and Nginx writes access logs |
 | Log Collection | Promtail parses access and ModSecurity logs from shared Docker volumes |
@@ -208,13 +198,13 @@ The dashboard also highlights blocked rows in red, separates allowed and blocked
 
 - **Paranoia Level:** `2`
 
-This provides stronger protection by enabling stricter OWASP CRS rules while maintaining a practical balance between security and false positives for typical web applications.
+This provides stronger protection by enabling stricter OWASP CRS rules while maintaining a practical balance between security and false positives for typical web applications. Blocking and detection paranoia are both set via the `BLOCKING_PARANOIA` / `DETECTION_PARANOIA` environment variables in `docker-compose.yml`.
 
 ### Log Routing
 
-ModSecurity writes its logs to a shared Docker volume.
+ModSecurity writes its audit logs (JSON format) to a shared Docker volume, and Nginx writes its access logs to a separate shared volume.
 
-Promtail mounts this volume as **read-only**, continuously scraping the logs and forwarding them to Loki for indexing and visualization.
+Promtail mounts both volumes as **read-only**, continuously scraping the logs and forwarding them to Loki for indexing and visualization.
 
 ---
 
@@ -223,7 +213,7 @@ Promtail mounts this volume as **read-only**, continuously scraping the logs and
 To stop and remove all containers, networks, and volumes:
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ---
