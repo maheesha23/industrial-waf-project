@@ -22,53 +22,13 @@ scrape_configs:
         status: transaction.response.http_code
         is_interrupted: transaction.is_interrupted
         rid0: transaction.messages[0].details.ruleId
-        rid1: transaction.messages[1].details.ruleId
-        rid2: transaction.messages[2].details.ruleId
-        rmsg0: transaction.messages[0].message
-        rmsg1: transaction.messages[1].message
-        rmsg2: transaction.messages[2].message
-  - template:
-      source: rule_id
-      template: '{{ if and .rid0 (ne .rid0 "949110") }}{{ .rid0 }}{{ else if and .rid1 (ne .rid1 "949110") }}{{ .rid1 }}{{ else if and .rid2 (ne .rid2 "949110") }}{{ .rid2 }}{{ else }}{{ .rid0 }}{{ end }}'
-  - template:
-      source: rule_msg
-      template: '{{ if and .rid0 (ne .rid0 "949110") }}{{ .rmsg0 }}{{ else if and .rid1 (ne .rid1 "949110") }}{{ .rmsg1 }}{{ else if and .rid2 (ne .rid2 "949110") }}{{ .rmsg2 }}{{ else }}{{ .rmsg0 }}{{ end }}'
+        messages_raw: transaction.messages
   - template:
       source: event_type
       template: '{{ if eq .is_interrupted "true" }}blocked{{ else }}allowed{{ end }}'
   - template:
       source: attack_type
-      template: '{{ .rule_id }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^942.*" .attack_type "SQL Injection" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^941.*" .attack_type "XSS" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^930.*" .attack_type "Path Traversal" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^931.*" .attack_type "RFI" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^93[23].*" .attack_type "RCE" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^920.*" .attack_type "Protocol Violation" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^913.*" .attack_type "Scanner Activity" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^949.*" .attack_type "Unclassified (Score Only)" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^[0-9]+$" .attack_type "Unknown Attack" }}'
-  - template:
-      source: attack_type
-      template: '{{ if eq .attack_type "" }}Unknown Attack{{ else }}{{ .attack_type }}{{ end }}'
+      template: '{{ if contains "\"ruleId\":\"942" .messages_raw }}SQL Injection{{ else if contains "\"ruleId\":\"941" .messages_raw }}XSS{{ else if contains "\"ruleId\":\"930" .messages_raw }}Path Traversal{{ else if contains "\"ruleId\":\"931" .messages_raw }}RFI{{ else if or (contains "\"ruleId\":\"932" .messages_raw) (contains "\"ruleId\":\"933" .messages_raw) }}RCE{{ else if contains "\"ruleId\":\"920" .messages_raw }}Protocol Violation{{ else if contains "\"ruleId\":\"913" .messages_raw }}Scanner Activity{{ else if eq .rid0 "949110" }}Unclassified (Score Only){{ else if .rid0 }}Unknown Attack{{ else }}Unknown Attack{{ end }}'
   - labels:
       status:
       rule_id:
@@ -83,31 +43,7 @@ scrape_configs:
       app: waf
       __path__: /var/log/nginx/access.log
   pipeline_stages:
-  - json:
-      expressions:
-        client_ip: transaction.client_ip
-        uri: transaction.request.uri
-        status: transaction.response.http_code
-        is_interrupted: transaction.is_interrupted
-        rid0: transaction.messages[0].details.ruleId
-        sqli_rule: "transaction.messages[?starts_with(details.ruleId, '942')].details.ruleId | [0]"
-        xss_rule: "transaction.messages[?starts_with(details.ruleId, '941')].details.ruleId | [0]"
-        trav_rule: "transaction.messages[?starts_with(details.ruleId, '930')].details.ruleId | [0]"
-        rfi_rule: "transaction.messages[?starts_with(details.ruleId, '931')].details.ruleId | [0]"
-        rce_rule: "transaction.messages[?starts_with(details.ruleId, '932') || starts_with(details.ruleId, '933')].details.ruleId | [0]"
-        proto_rule: "transaction.messages[?starts_with(details.ruleId, '920')].details.ruleId | [0]"
-        scan_rule: "transaction.messages[?starts_with(details.ruleId, '913')].details.ruleId | [0]"
-  - template:
-      source: rule_id
-      template: '{{ if .sqli_rule }}{{ .sqli_rule }}{{ else if .xss_rule }}{{ .xss_rule }}{{ else if .trav_rule }}{{ .trav_rule }}{{ else if .rfi_rule }}{{ .rfi_rule }}{{ else if .rce_rule }}{{ .rce_rule }}{{ else if .proto_rule }}{{ .proto_rule }}{{ else if .scan_rule }}{{ .scan_rule }}{{ else }}{{ .rid0 }}{{ end }}'
-  - template:
-      source: event_type
-      template: '{{ if eq .is_interrupted "true" }}blocked{{ else }}allowed{{ end }}'
-  - template:
-      source: attack_type
-      template: '{{ if .sqli_rule }}SQL Injection{{ else if .xss_rule }}XSS{{ else if .trav_rule }}Path Traversal{{ else if .rfi_rule }}RFI{{ else if .rce_rule }}RCE{{ else if .proto_rule }}Protocol Violation{{ else if .scan_rule }}Scanner Activity{{ else if eq .rid0 "949110" }}Unclassified (Score Only){{ else if .rid0 }}Unknown Attack{{ else }}Unknown Attack{{ end }}'
+  - regex:
+      expression: '^(?P<client_ip>\S+) \S+ \S+ \[(?P<time_local>[^\]]+)\] "(?P<method>\S+) (?P<uri>\S+) \S+" (?P<status>\d{3}) (?P<body_bytes_sent>\d+) "(?P<referer>[^"]*)" "(?P<user_agent>[^"]*)"'
   - labels:
       status:
-      rule_id:
-      event_type:
-      attack_type:
