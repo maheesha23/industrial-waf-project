@@ -234,6 +234,15 @@ Promtail mounts both volumes as **read-only**, continuously scraping the logs an
 
 ---
 
+### Network & Access Security
+
+This deployment is intended for an isolated lab environment, not production exposure. A few deliberate tradeoffs are worth stating explicitly:
+
+- **Loki is not exposed to the host.** Only Grafana communicates with Loki, over Docker's internal network. Loki's HTTP API has no built-in authentication, so publishing its port directly to the host would allow unauthenticated read and write access to the entire log pipeline from anywhere on the network.
+- **Grafana anonymous access:** if `GF_AUTH_ANONYMOUS_ENABLED` is left enabled, the dashboard is viewable without login, restricted to the `Viewer` role (no edit/delete permissions). Disable this entirely for any deployment beyond a controlled demo.
+- **Default Grafana credentials** (`admin / admin`) are for local lab use only and should be changed via `GF_SECURITY_ADMIN_PASSWORD` before any wider deployment.
+- **All traffic is unencrypted HTTP** - the WAF listener, Grafana, and Loki all communicate in plaintext, with no TLS termination anywhere in the stack. Session cookies and log data are visible to anyone able to observe network traffic on the same segment. TLS would be required before this stack left an isolated lab network.
+
 ## 🛑 Teardown
 
 To stop and remove all containers, networks, and volumes:

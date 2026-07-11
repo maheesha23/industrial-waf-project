@@ -42,8 +42,6 @@ services:
     container_name: loki
     restart: unless-stopped
     command: -config.file=/etc/loki/loki-config.yaml
-    ports:
-      - "3100:3100"
     volumes:
       - ./loki-config.yaml:/etc/loki/loki-config.yaml:ro
       - loki-data:/loki
@@ -78,7 +76,7 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
       GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
