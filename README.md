@@ -19,24 +19,7 @@
 
 Traffic flows through the Nginx reverse proxy, where the ModSecurity engine evaluates HTTP requests against the OWASP Core Rule Set (CRS). Malicious requests are blocked (`403 Forbidden`) and logged. Promtail reads these logs and ships them to Loki, which Grafana queries to visualize attack activity in real time.
 
-```text
-[ Attacker / User ]
-        │
-        ▼ (Port 80)
-┌────────────────────────────────────────┐
-│             Nginx Reverse Proxy        │
-│  ┌──────────────────────────────────┐  │      [ SOC Logging Pipeline ]
-│  │ ModSecurity WAF Engine           │  │ ──┐   ┌──────────┐    ┌─────────┐    ┌─────────┐
-│  │ (OWASP Core Rule Set)            │  │   ├──▶│ Promtail │──▶│  Loki   │──▶│ Grafana │
-│  └──────────────────────────────────┘  │ ──┘   └──────────┘    └─────────┘    └─────────┘
-└────────────────────────────────────────┘
-        │ (Clean Traffic Only)
-        ▼ (Port 3000)
-┌────────────────────────────────────────┐
-│            Vulnerable Web App          │
-│            (OWASP Juice Shop)          │
-└────────────────────────────────────────┘
-```
+![System Architecture Diagram](docs/diagrams/architecture-overview.png)
 
 ---
 
@@ -232,8 +215,6 @@ ModSecurity writes its audit logs (JSON format) to a shared Docker volume, and N
 
 Promtail mounts both volumes as **read-only**, continuously scraping the logs and forwarding them to Loki for indexing and visualization.
 
----
-
 ### Network & Access Security
 
 This deployment is intended for an isolated lab environment, not production exposure. A few deliberate tradeoffs are worth stating explicitly:
@@ -242,6 +223,8 @@ This deployment is intended for an isolated lab environment, not production expo
 - **Grafana anonymous access:** if `GF_AUTH_ANONYMOUS_ENABLED` is left enabled, the dashboard is viewable without login, restricted to the `Viewer` role (no edit/delete permissions). Disable this entirely for any deployment beyond a controlled demo.
 - **Default Grafana credentials** (`admin / admin`) are for local lab use only and should be changed via `GF_SECURITY_ADMIN_PASSWORD` before any wider deployment.
 - **All traffic is unencrypted HTTP** - the WAF listener, Grafana, and Loki all communicate in plaintext, with no TLS termination anywhere in the stack. Session cookies and log data are visible to anyone able to observe network traffic on the same segment. TLS would be required before this stack left an isolated lab network.
+
+---
 
 ## 🛑 Teardown
 
