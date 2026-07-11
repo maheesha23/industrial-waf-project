@@ -244,6 +244,10 @@ docker compose down -v
 
 ---
 
+## 📄 Full Project Report
+
+A detailed report covering architecture, WAF configuration, DoS mitigation, testing methodology (including the cross-VM Kali → Ubuntu attack simulation), and results is available at [`docs/WAF_SOC_Project_Report.pdf`](docs/WAF_SOC_Project_Report.pdf).
+
 ## 📄 License
 
 Created for portfolio and educational demonstration purposes.
