@@ -1,0 +1,98 @@
+2026/07/02 13:29:40 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/02 13:29:40 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/02 13:29:40 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/02 13:42:31 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/02 13:42:31 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/02 13:42:31 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/02 17:39:17 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/02 17:39:17 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/02 17:39:17 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/02 17:42:17 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/02 17:42:17 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/02 17:42:17 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/02 18:18:21 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/02 18:18:21 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/02 18:18:21 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/02 18:31:48 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/02 18:31:48 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/02 18:31:48 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 05:49:04 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 05:49:04 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 05:49:04 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 06:16:32 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 06:16:32 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 06:16:32 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 16:22:54 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 16:22:54 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 16:22:54 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 16:42:15 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 16:42:15 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 16:42:15 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 17:29:10 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 17:29:10 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 17:29:10 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 17:37:59 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 17:37:59 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 17:37:59 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/03 19:26:07 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/03 19:26:07 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/03 19:26:07 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 11:08:25 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 11:08:25 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 11:08:25 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 11:25:04 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 11:25:04 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 11:25:04 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 11:58:14 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 11:58:14 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 11:58:14 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 13:32:35 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 13:32:35 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 13:32:35 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 13:55:47 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 13:55:47 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 13:55:47 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 15:56:34 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 15:56:34 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 15:56:34 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 16:13:00 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 16:13:00 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 16:13:00 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 16:28:56 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 16:28:56 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/847/0)
+2026/07/04 16:28:56 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 16:48:19 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 16:48:19 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/04 16:48:19 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/04 16:50:43 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/04 16:50:43 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/04 16:50:43 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/06 05:53:15 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/06 05:53:15 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/06 05:53:15 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/09 09:16:24 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/09 09:16:24 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/09 09:16:24 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/09 09:17:10 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/09 09:17:10 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/09 09:17:10 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/09 19:31:01 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/09 19:31:01 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/09 19:31:01 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/09 20:09:26 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/09 20:09:26 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/09 20:09:26 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/09 21:26:15 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/09 21:26:15 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/09 21:26:15 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/10 05:43:07 [warn] 1#1: "ssl_stapling" ignored, issuer certificate not found for certificate "/etc/nginx/conf/server.crt"
+2026/07/10 05:43:07 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/10 05:43:07 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/10 07:06:56 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/10 07:06:56 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/10 07:27:38 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/10 07:27:38 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/10 07:32:20 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/10 07:32:20 [notice] 1#1: libmodsecurity3 version 3.0.16
+2026/07/11 10:50:14 [notice] 1#1: ModSecurity-nginx v1.0.4 (rules loaded inline/local/remote: 0/848/0)
+2026/07/11 10:50:14 [notice] 1#1: libmodsecurity3 version 3.0.16
