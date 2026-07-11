@@ -22,53 +22,13 @@ scrape_configs:
         status: transaction.response.http_code
         is_interrupted: transaction.is_interrupted
         rid0: transaction.messages[0].details.ruleId
-        rid1: transaction.messages[1].details.ruleId
-        rid2: transaction.messages[2].details.ruleId
-        rmsg0: transaction.messages[0].message
-        rmsg1: transaction.messages[1].message
-        rmsg2: transaction.messages[2].message
-  - template:
-      source: rule_id
-      template: '{{ if and .rid0 (ne .rid0 "949110") }}{{ .rid0 }}{{ else if and .rid1 (ne .rid1 "949110") }}{{ .rid1 }}{{ else if and .rid2 (ne .rid2 "949110") }}{{ .rid2 }}{{ else }}{{ .rid0 }}{{ end }}'
-  - template:
-      source: rule_msg
-      template: '{{ if and .rid0 (ne .rid0 "949110") }}{{ .rmsg0 }}{{ else if and .rid1 (ne .rid1 "949110") }}{{ .rmsg1 }}{{ else if and .rid2 (ne .rid2 "949110") }}{{ .rmsg2 }}{{ else }}{{ .rmsg0 }}{{ end }}'
+        messages_raw: transaction.messages
   - template:
       source: event_type
       template: '{{ if eq .is_interrupted "true" }}blocked{{ else }}allowed{{ end }}'
   - template:
       source: attack_type
-      template: '{{ .rule_id }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^942.*" .attack_type "SQL Injection" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^941.*" .attack_type "XSS" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^930.*" .attack_type "Path Traversal" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^931.*" .attack_type "RFI" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^93[23].*" .attack_type "RCE" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^920.*" .attack_type "Protocol Violation" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^913.*" .attack_type "Scanner Activity" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^949.*" .attack_type "Unclassified (Score Only)" }}'
-  - template:
-      source: attack_type
-      template: '{{ regexReplaceAll "^[0-9]+$" .attack_type "Unknown Attack" }}'
-  - template:
-      source: attack_type
-      template: '{{ if eq .attack_type "" }}Unknown Attack{{ else }}{{ .attack_type }}{{ end }}'
+      template: '{{ if contains "\"ruleId\":\"942" .messages_raw }}SQL Injection{{ else if contains "\"ruleId\":\"941" .messages_raw }}XSS{{ else if contains "\"ruleId\":\"930" .messages_raw }}Path Traversal{{ else if contains "\"ruleId\":\"931" .messages_raw }}RFI{{ else if or (contains "\"ruleId\":\"932" .messages_raw) (contains "\"ruleId\":\"933" .messages_raw) }}RCE{{ else if contains "\"ruleId\":\"920" .messages_raw }}Protocol Violation{{ else if contains "\"ruleId\":\"913" .messages_raw }}Scanner Activity{{ else if eq .rid0 "949110" }}Unclassified (Score Only){{ else if .rid0 }}Unknown Attack{{ else }}Unknown Attack{{ end }}'
   - labels:
       status:
       rule_id:

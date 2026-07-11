@@ -1225,24 +1225,29 @@
                         "index": 8,
                         "text": "🟥 403 Forbidden"
                       },
+                      "429": {
+                        "color": "#FF9830",
+                        "index": 9,
+                        "text": "🟧 429 Rate Limited"
+                      },
                       "404": {
                         "color": "#FF780A",
-                        "index": 9,
+                        "index": 10,
                         "text": "🟧 404 Not Found"
                       },
                       "500": {
                         "color": "#C4162A",
-                        "index": 10,
+                        "index": 11,
                         "text": "⬛ 500 Server Error"
                       },
                       "502": {
                         "color": "#C4162A",
-                        "index": 11,
+                        "index": 12,
                         "text": "⬛ 502 Bad Gateway"
                       },
                       "503": {
                         "color": "#C4162A",
-                        "index": 12,
+                        "index": 13,
                         "text": "⬛ 503 Unavailable"
                       }
                     },
@@ -1253,7 +1258,7 @@
                       "pattern": "^2..$",
                       "result": {
                         "color": "#37872D",
-                        "index": 13,
+                        "index": 14,
                         "text": "🟩 2xx"
                       }
                     },
@@ -1264,7 +1269,7 @@
                       "pattern": "^3..$",
                       "result": {
                         "color": "#1F60C4",
-                        "index": 14,
+                        "index": 15,
                         "text": "🟦 3xx"
                       }
                     },
@@ -1275,7 +1280,7 @@
                       "pattern": "^4..$",
                       "result": {
                         "color": "#FF780A",
-                        "index": 15,
+                        "index": 16,
                         "text": "🟧 4xx"
                       }
                     },
@@ -1286,7 +1291,7 @@
                       "pattern": "^5..$",
                       "result": {
                         "color": "#C4162A",
-                        "index": 16,
+                        "index": 17,
                         "text": "⬛ 5xx"
                       }
                     },

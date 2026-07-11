@@ -54,7 +54,7 @@ docker compose up -d
 
 > **Grafana credentials:** `admin / admin`.
 
-Grafana is automatically provisioned with a Loki data source and the **WAF SOC Overview** dashboard on first startup — no manual setup required. Open the dashboard directly from **Dashboards → WAF SOC → WAF SOC Overview**, or query Loki manually via **Explore**:
+Grafana is automatically provisioned with a Loki data source and the **WAF SOC Overview** dashboard on first startup. Open the dashboard directly from **Dashboards → WAF SOC → WAF SOC Overview**, or query Loki manually via **Explore**:
 
 ```logql
 {job="modsecurity"}
@@ -141,6 +141,20 @@ Blocked by rule `930120`.
 
 ---
 
+#### 🚫 Rate Limit Exceeded (DoS)
+
+The script sends a burst of rapid requests to the homepage, exceeding the configured rate limit.
+
+**Expected Result**
+
+```text
+HTTP 429 Too Many Requests
+```
+
+Nginx throttles the excess requests before they reach the backend.
+
+---
+
 ## 📊 Visualizing Attacks (Grafana SOC)
 
 The **WAF SOC Overview** dashboard gives a real-time operational view of traffic hitting the WAF:
@@ -173,6 +187,7 @@ This returns the full JSON audit trail for every request ModSecurity flagged, in
 |-----------|---------------|
 | WAF Engine | OWASP ModSecurity Core Rule Set (CRS) v4.25.0 |
 | Paranoia Level | 2 |
+| Rate Limiting | Nginx `limit_req`/`limit_conn`, per-client-IP, tiered by request type |
 | Logging | ModSecurity writes to `error.log` and Nginx writes access logs |
 | Log Collection | Promtail parses access and ModSecurity logs from shared Docker volumes |
 | Visualization | Grafana queries Loki with table panels, summary stats, filters, and data links |
@@ -183,13 +198,22 @@ This returns the full JSON audit trail for every request ModSecurity flagged, in
 
 This provides stronger protection by enabling stricter OWASP CRS rules while maintaining a practical balance between security and false positives for typical web applications. Blocking and detection paranoia are both set via the `BLOCKING_PARANOIA` / `DETECTION_PARANOIA` environment variables in `docker-compose.yml`.
 
+### Rate Limiting (DoS Mitigation)
+
+ModSecurity/CRS inspects request *content* for known attack signatures. Rate limiting is handled separately, at the Nginx layer, via a custom template (`nginx-templates/default.conf.template`) mounted over the image's default server config:
+
+| Zone | Scope | Limit | Burst |
+|------|-------|-------|-------|
+| `general_limit` | Pages, API endpoints (`location /`) | 10 req/sec per IP | 20 |
+| `static_limit` | Images, CSS, JS, fonts | 50 req/sec per IP | 100 |
+
+**Scope and limitations:** this mitigates basic single-source request floods (a script or tool hammering the site from one IP). It does **not** protect against distributed (multi-source) DDoS, which requires infrastructure this project doesn't include - a CDN/edge network, anycast routing, or upstream network-layer protection (e.g. Cloudflare, AWS Shield). A single-container reverse proxy has no way to absorb traffic distributed across many source IPs. That's a scaling problem, not a configuration one.
+
 ### Log Routing
 
 ModSecurity writes its audit logs (JSON format) to a shared Docker volume, and Nginx writes its access logs to a separate shared volume.
 
 Promtail mounts both volumes as **read-only**, continuously scraping the logs and forwarding them to Loki for indexing and visualization.
-
----
 
 ### Network & Access Security
 
@@ -211,6 +235,10 @@ docker compose down -v
 ```
 
 ---
+
+## 📄 Full Project Report
+
+A detailed report covering architecture, WAF configuration, DoS mitigation, testing methodology (including the cross-VM Kali → Ubuntu attack simulation), and results is available at [`docs/WAF_SOC_Project_Report.pdf`](docs/WAF_SOC_Project_Report.pdf).
 
 ## 📄 License
 
