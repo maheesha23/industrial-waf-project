@@ -191,8 +191,6 @@ Promtail mounts both volumes as **read-only**, continuously scraping the logs an
 
 ---
 
-<<<<<<< Updated upstream
-=======
 ### Network & Access Security
 
 This deployment is intended for an isolated lab environment, not production exposure. A few deliberate tradeoffs are worth stating explicitly:
@@ -204,7 +202,6 @@ This deployment is intended for an isolated lab environment, not production expo
 
 ---
 
->>>>>>> Stashed changes
 ## 🛑 Teardown
 
 To stop and remove all containers, networks, and volumes:
