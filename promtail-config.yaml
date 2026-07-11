@@ -83,7 +83,31 @@ scrape_configs:
       app: waf
       __path__: /var/log/nginx/access.log
   pipeline_stages:
-  - regex:
-      expression: '^(?P<client_ip>\S+) \S+ \S+ \[(?P<time_local>[^\]]+)\] "(?P<method>\S+) (?P<uri>\S+) \S+" (?P<status>\d{3}) (?P<body_bytes_sent>\d+) "(?P<referer>[^"]*)" "(?P<user_agent>[^"]*)"'
+  - json:
+      expressions:
+        client_ip: transaction.client_ip
+        uri: transaction.request.uri
+        status: transaction.response.http_code
+        is_interrupted: transaction.is_interrupted
+        rid0: transaction.messages[0].details.ruleId
+        sqli_rule: "transaction.messages[?starts_with(details.ruleId, '942')].details.ruleId | [0]"
+        xss_rule: "transaction.messages[?starts_with(details.ruleId, '941')].details.ruleId | [0]"
+        trav_rule: "transaction.messages[?starts_with(details.ruleId, '930')].details.ruleId | [0]"
+        rfi_rule: "transaction.messages[?starts_with(details.ruleId, '931')].details.ruleId | [0]"
+        rce_rule: "transaction.messages[?starts_with(details.ruleId, '932') || starts_with(details.ruleId, '933')].details.ruleId | [0]"
+        proto_rule: "transaction.messages[?starts_with(details.ruleId, '920')].details.ruleId | [0]"
+        scan_rule: "transaction.messages[?starts_with(details.ruleId, '913')].details.ruleId | [0]"
+  - template:
+      source: rule_id
+      template: '{{ if .sqli_rule }}{{ .sqli_rule }}{{ else if .xss_rule }}{{ .xss_rule }}{{ else if .trav_rule }}{{ .trav_rule }}{{ else if .rfi_rule }}{{ .rfi_rule }}{{ else if .rce_rule }}{{ .rce_rule }}{{ else if .proto_rule }}{{ .proto_rule }}{{ else if .scan_rule }}{{ .scan_rule }}{{ else }}{{ .rid0 }}{{ end }}'
+  - template:
+      source: event_type
+      template: '{{ if eq .is_interrupted "true" }}blocked{{ else }}allowed{{ end }}'
+  - template:
+      source: attack_type
+      template: '{{ if .sqli_rule }}SQL Injection{{ else if .xss_rule }}XSS{{ else if .trav_rule }}Path Traversal{{ else if .rfi_rule }}RFI{{ else if .rce_rule }}RCE{{ else if .proto_rule }}Protocol Violation{{ else if .scan_rule }}Scanner Activity{{ else if eq .rid0 "949110" }}Unclassified (Score Only){{ else if .rid0 }}Unknown Attack{{ else }}Unknown Attack{{ end }}'
   - labels:
       status:
+      rule_id:
+      event_type:
+      attack_type:
